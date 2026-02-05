@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Runa Radio</title>
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body data-page="home">
+    <header class="nav">
+      <h1>Runa Radio</h1>
+      <nav>
+        <a href="./index.html">Home</a>
+        <a href="./schedule.html">Schedule</a>
+        <a href="./community.html">Community</a>
+        <a href="./admin.html">Admin</a>
+        <a href="./login/index.html">Login</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="hero card">
+        <h2 id="station-name">Runa Radio</h2>
+        <p id="station-tagline"></p>
+
+        <section class="luna-player" aria-label="Luna Radio Player">
+          <audio id="luna-audio" preload="none"></audio>
+          <div class="luna-meta">
+            <p class="muted">Ahora sonando</p>
+            <h3 id="luna-track">Sin señal</h3>
+            <p id="luna-artist" class="muted">-</p>
+            <p id="luna-stream-status" class="muted">Listo</p>
+          </div>
+
+          <div class="luna-controls">
+            <button id="luna-play" class="button" type="button">▶️ Play</button>
+            <button id="luna-stop" class="button secondary" type="button">⏹ Stop</button>
+            <label for="luna-volume" class="muted">Volumen</label>
+            <input id="luna-volume" type="range" min="0" max="1" step="0.05" value="0.8" />
+          </div>
+
+          <div class="luna-wave" id="luna-wave" aria-hidden="true"></div>
+        </section>
+      </section>
+
+      <section class="grid-two">
+        <article class="card">
+          <h3>Live Now</h3>
+          <p><strong id="live-track">Cargando...</strong></p>
+          <p id="live-artist"></p>
+          <p id="listener-count"></p>
+        </article>
+
+        <article class="card">
+          <h3>Featured Shows</h3>
+          <ul id="featured-shows" class="list"></ul>
+        </article>
+      </section>
+
+      <section class="card">
+        <h3>Recently Played</h3>
+        <table>
+          <thead><tr><th>Track</th><th>Artist</th></tr></thead>
+          <tbody id="recently-played"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <script type="module" src="./assets/app.js"></script>
+  </body>
+</html>

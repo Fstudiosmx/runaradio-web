@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Runa Radio | Login</title>
+    <link rel="stylesheet" href="../assets/styles.css" />
+  </head>
+  <body data-page="login">
+    <header class="nav">
+      <h1>Runa Radio</h1>
+      <nav>
+        <a href="../index.html">Home</a>
+        <a href="../schedule.html">Schedule</a>
+        <a href="../community.html">Community</a>
+        <a href="../admin.html">Admin</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="card login-card">
+        <h2>Login de Administrador</h2>
+        <p class="muted">Inicia sesión aquí. El inicio del sitio está en <code>/index.html</code>.</p>
+        <form id="admin-login" class="stack">
+          <input required name="username" placeholder="Username" autocomplete="username" />
+          <input required type="password" name="password" placeholder="Password" autocomplete="current-password" />
+          <button class="button" type="submit">Ingresar</button>
+        </form>
+        <p class="muted">Default: admin / runaradio123</p>
+        <p id="login-status"></p>
+      </section>
+    </main>
+
+    <script type="module" src="../assets/app.js"></script>
+  </body>
+</html>
