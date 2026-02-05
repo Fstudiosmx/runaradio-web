@@ -14,30 +14,27 @@
         <a href="./schedule.html">Schedule</a>
         <a href="./community.html">Community</a>
         <a href="./admin.html">Admin</a>
+        <a href="./login/index.html">Login</a>
       </nav>
     </header>
 
     <main class="container grid-two">
       <section class="card">
-        <h2>Admin Login</h2>
-        <form id="admin-login" class="stack">
-          <input required name="username" placeholder="Username" />
-          <input required type="password" name="password" placeholder="Password" />
-          <button class="button" type="submit">Login</button>
-        </form>
-        <p class="muted">Default: admin / runaradio123</p>
-        <p id="admin-status"></p>
-      </section>
-
-      <section class="card">
         <h2>Panel Administrativo</h2>
-        <form id="station-form" class="stack disabled" aria-disabled="true">
+        <p class="muted">Área protegida. Si no estás autenticado, serás enviado a <code>/login</code>.</p>
+        <form id="station-form" class="stack" aria-disabled="false">
           <input required name="name" placeholder="Station name" />
           <input required name="tagline" placeholder="Tagline" />
           <input required name="streamUrl" placeholder="Stream URL" />
           <button class="button" type="submit">Guardar cambios</button>
         </form>
-        <button id="export-db" class="button secondary disabled" disabled>Export DB JSON</button>
+        <p id="admin-status"></p>
+      </section>
+
+      <section class="card stack">
+        <h3>Sesión</h3>
+        <button id="export-db" class="button secondary">Export DB JSON</button>
+        <button id="logout-admin" class="button">Cerrar sesión</button>
       </section>
     </main>
 

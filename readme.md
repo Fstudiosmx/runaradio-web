@@ -4,9 +4,10 @@ Sitio estático + CLI para operar en GitHub Pages con integración a LibreTime.
 
 ## Características
 - Frontend multi-página (`docs/`) listo para GitHub Pages.
+- Login de administración separado en `/login` (archivo `docs/login/index.html`).
+- Panel admin protegido en `/admin.html` con sesión local.
 - Integración con API de `https://libretime.kusmedios.lat` con timeout y fallback a caché local.
 - Base de datos compatible con GitHub Pages (`localStorage` + JSON semilla).
-- Panel administrativo con autenticación local (hash SHA-256), edición de estación y exportación de configuración.
 - CLI para sincronizar metadata y administrar semilla.
 
 ## Comandos
@@ -18,8 +19,15 @@ npm run seed-admin -- --user admin --password nuevaClave
 npm run cli -- export --out ./backup.json
 ```
 
-## Deploy GitHub Pages
-1. Push del repositorio.
-2. En GitHub, Settings > Pages.
-3. Source: Deploy from branch.
-4. Branch: `main` (o tu branch de release), folder: `/docs`.
+## Deploy GitHub Pages (recomendado)
+Este repositorio incluye workflow: `.github/workflows/deploy-pages.yml`.
+
+1. Haz push a `main` (o `work`).
+2. En GitHub > Settings > Pages > Source, selecciona **GitHub Actions**.
+3. Espera el workflow **Deploy GitHub Pages**.
+4. URL final esperada: `https://<usuario>.github.io/<repo>/`.
+
+## Rutas importantes
+- Home: `/index.html`
+- Login: `/login/`
+- Admin: `/admin.html`

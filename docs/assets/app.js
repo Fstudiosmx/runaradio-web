@@ -1,27 +1,28 @@
-const STORAGE_KEY = "runaradio.db.v2";
-const API_CACHE_KEY = "runaradio.api-cache.v2";
+const STORAGE_KEY = "runaradio.db.v3";
+const API_CACHE_KEY = "runaradio.api-cache.v3";
 const ADMIN_SESSION_KEY = "runaradio.admin-session.v1";
 const API_TIMEOUT_MS = 7000;
 
 const page = document.body.dataset.page;
 
-/** @typedef {{station:{name:string,tagline:string,streamUrl:string,apiBaseUrl:string},listeners:{current:number,peakToday:number},featuredShows:Array<{title:string,dj:string,day:string,time:string}>,socialPosts:Array<{author:string,message:string,hoursAgo:number}>,requests:Array<{title:string,artist:string,createdAt:string}>,recentlyPlayed:Array<{track:string,artist:string}>,admin:{users:Array<{username:string,passwordHash:string,role:string}>,updatedAt:string|null}}} RunaradioDb */
+function toHex(buffer) {
+  return [...new Uint8Array(buffer)].map((value) => value.toString(16).padStart(2, "0")).join("");
+}
 
 async function sha256(text) {
   const bytes = new TextEncoder().encode(text);
-  const hashBuffer = await crypto.subtle.digest("SHA-256", bytes);
-  return [...new Uint8Array(hashBuffer)].map((value) => value.toString(16).padStart(2, "0")).join("");
+  return toHex(await crypto.subtle.digest("SHA-256", bytes));
 }
 
 async function loadDefaultDb() {
-  const response = await fetch("./data/default-db.json", { cache: "no-store" });
+  const baseDataPath = page === "login" ? "../data/default-db.json" : "./data/default-db.json";
+  const response = await fetch(baseDataPath, { cache: "no-store" });
+
   if (!response.ok) {
     throw new Error(`No se pudo cargar default-db.json (HTTP ${response.status})`);
   }
 
-  /** @type {RunaradioDb} */
-  const payload = await response.json();
-  return payload;
+  return response.json();
 }
 
 function persistDb(db) {
@@ -30,6 +31,7 @@ function persistDb(db) {
 
 async function getDb() {
   const local = localStorage.getItem(STORAGE_KEY);
+
   if (local) {
     try {
       return JSON.parse(local);
@@ -49,9 +51,7 @@ async function fetchJsonWithTimeout(url, timeoutMs = API_TIMEOUT_MS) {
 
   try {
     const response = await fetch(url, { signal: controller.signal });
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status} (${url})`);
-    }
+    if (!response.ok) throw new Error(`HTTP ${response.status} (${url})`);
     return await response.json();
   } finally {
     clearTimeout(timeoutRef);
@@ -63,8 +63,7 @@ async function fetchLibreTime(baseUrl) {
   const results = await Promise.all(
     endpoints.map(async (path) => {
       try {
-        const json = await fetchJsonWithTimeout(`${baseUrl}${path}`);
-        return { path, data: json, ok: true };
+        return { path, data: await fetchJsonWithTimeout(`${baseUrl}${path}`), ok: true };
       } catch (error) {
         console.warn(`[LibreTime] ${path} no disponible:`, error.message);
         return { path, data: null, ok: false };
@@ -114,6 +113,7 @@ function renderHome(db, api) {
 
   const shows = document.getElementById("featured-shows");
   shows.replaceChildren();
+
   for (const show of db.featuredShows) {
     const li = document.createElement("li");
     li.textContent = `${show.title} · ${show.dj} (${show.day} ${show.time})`;
@@ -122,6 +122,7 @@ function renderHome(db, api) {
 
   const played = document.getElementById("recently-played");
   played.replaceChildren();
+
   for (const item of db.recentlyPlayed) {
     const tr = document.createElement("tr");
     tr.appendChild(createCell(item.track));
@@ -147,9 +148,7 @@ function renderSchedule(db, api) {
       }
     }
 
-    if (table.children.length > 0) {
-      return;
-    }
+    if (table.children.length > 0) return;
   }
 
   for (const show of db.featuredShows) {
@@ -170,8 +169,8 @@ function renderCommunity(db) {
 
   for (const post of db.socialPosts) {
     const li = document.createElement("li");
-    const strong = document.createElement("strong");
-    strong.textContent = post.author;
+    const author = document.createElement("strong");
+    author.textContent = post.author;
 
     const message = document.createElement("p");
     message.textContent = post.message;
@@ -180,7 +179,7 @@ function renderCommunity(db) {
     meta.className = "muted";
     meta.textContent = `hace ${post.hoursAgo}h`;
 
-    li.appendChild(strong);
+    li.appendChild(author);
     li.appendChild(message);
     li.appendChild(meta);
     wall.appendChild(li);
@@ -207,10 +206,55 @@ function isAdminSessionActive() {
   return localStorage.getItem(ADMIN_SESSION_KEY) === "1";
 }
 
-function renderAdmin(db) {
+function getAdminUrlForCurrentPage() {
+  return page === "login" ? "../admin.html" : "./admin.html";
+}
+
+function getLoginUrlForCurrentPage() {
+  return page === "login" ? "./index.html" : "./login/index.html";
+}
+
+async function authenticateAdmin(db, username, password) {
+  const incomingHash = await sha256(password);
+  return db.admin.users.some((item) => item.username === username && item.passwordHash === incomingHash);
+}
+
+function renderLogin(db) {
   const loginForm = document.getElementById("admin-login");
+  const status = document.getElementById("login-status");
+
+  if (isAdminSessionActive()) {
+    window.location.href = getAdminUrlForCurrentPage();
+    return;
+  }
+
+  loginForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    const data = new FormData(loginForm);
+    const username = String(data.get("username") || "");
+    const password = String(data.get("password") || "");
+
+    const valid = await authenticateAdmin(db, username, password);
+    if (!valid) {
+      status.textContent = "Credenciales inválidas.";
+      return;
+    }
+
+    localStorage.setItem(ADMIN_SESSION_KEY, "1");
+    status.textContent = "Login correcto. Redirigiendo...";
+    window.location.href = getAdminUrlForCurrentPage();
+  });
+}
+
+function renderAdmin(db) {
+  if (!isAdminSessionActive()) {
+    window.location.href = getLoginUrlForCurrentPage();
+    return;
+  }
+
   const stationForm = document.getElementById("station-form");
   const exportBtn = document.getElementById("export-db");
+  const logoutBtn = document.getElementById("logout-admin");
   const status = document.getElementById("admin-status");
 
   const nameInput = stationForm.elements.namedItem("name");
@@ -221,41 +265,10 @@ function renderAdmin(db) {
   taglineInput.value = db.station.tagline;
   streamInput.value = db.station.streamUrl;
 
-  let authenticated = isAdminSessionActive();
-
-  const toggleAdmin = () => {
-    stationForm.classList.toggle("disabled", !authenticated);
-    stationForm.setAttribute("aria-disabled", String(!authenticated));
-    exportBtn.disabled = !authenticated;
-    exportBtn.classList.toggle("disabled", !authenticated);
-  };
-
-  toggleAdmin();
-
-  loginForm.addEventListener("submit", async (event) => {
-    event.preventDefault();
-    const data = new FormData(loginForm);
-    const username = String(data.get("username") || "");
-    const password = String(data.get("password") || "");
-    const incomingHash = await sha256(password);
-
-    const user = db.admin.users.find((item) => item.username === username && item.passwordHash === incomingHash);
-    authenticated = Boolean(user);
-    if (authenticated) {
-      localStorage.setItem(ADMIN_SESSION_KEY, "1");
-    } else {
-      localStorage.removeItem(ADMIN_SESSION_KEY);
-    }
-
-    toggleAdmin();
-    status.textContent = authenticated ? "Autenticación correcta." : "Credenciales inválidas.";
-  });
-
   stationForm.addEventListener("submit", (event) => {
     event.preventDefault();
-    if (!authenticated) return;
-
     const data = new FormData(stationForm);
+
     db.station.name = String(data.get("name") || "");
     db.station.tagline = String(data.get("tagline") || "");
     db.station.streamUrl = String(data.get("streamUrl") || "");
@@ -268,8 +281,8 @@ function renderAdmin(db) {
   exportBtn.addEventListener("click", () => {
     const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
     const href = URL.createObjectURL(blob);
-
     const a = document.createElement("a");
+
     a.href = href;
     a.download = "runaradio-db-export.json";
     document.body.appendChild(a);
@@ -277,6 +290,11 @@ function renderAdmin(db) {
     a.remove();
 
     URL.revokeObjectURL(href);
+  });
+
+  logoutBtn.addEventListener("click", () => {
+    localStorage.removeItem(ADMIN_SESSION_KEY);
+    window.location.href = getLoginUrlForCurrentPage();
   });
 }
 
@@ -288,6 +306,7 @@ async function bootstrap() {
   if (page === "home") renderHome(db, api);
   if (page === "schedule") renderSchedule(db, api);
   if (page === "community") renderCommunity(db);
+  if (page === "login") renderLogin(db);
   if (page === "admin") renderAdmin(db);
 }
 
