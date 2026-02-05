@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Runa Radio</title>
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body data-page="home">
+    <header class="nav">
+      <h1>Runa Radio</h1>
+      <nav>
+        <a href="./index.html">Home</a>
+        <a href="./schedule.html">Schedule</a>
+        <a href="./community.html">Community</a>
+        <a href="./admin.html">Admin</a>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="hero card">
+        <h2 id="station-name">Runa Radio</h2>
+        <p id="station-tagline"></p>
+        <div class="actions">
+          <a id="listen-live" class="button" target="_blank" rel="noreferrer">Listen Live</a>
+        </div>
+      </section>
+
+      <section class="grid-two">
+        <article class="card">
+          <h3>Live Now</h3>
+          <p><strong id="live-track">Cargando...</strong></p>
+          <p id="live-artist"></p>
+          <p id="listener-count"></p>
+        </article>
+
+        <article class="card">
+          <h3>Featured Shows</h3>
+          <ul id="featured-shows" class="list"></ul>
+        </article>
+      </section>
+
+      <section class="card">
+        <h3>Recently Played</h3>
+        <table>
+          <thead><tr><th>Track</th><th>Artist</th></tr></thead>
+          <tbody id="recently-played"></tbody>
+        </table>
+      </section>
+    </main>
+
+    <script type="module" src="./assets/app.js"></script>
+  </body>
+</html>
