@@ -3,7 +3,7 @@
 Sitio estático + CLI para operar en GitHub Pages con integración a LibreTime.
 
 ## Características
-- Frontend multi-página (`docs/`) listo para GitHub Pages.
+- Frontend multi-página (`docs/`) listo para GitHub Pages con reproductor integrado en Home (sin abrir otra URL).
 - Login de administración separado en `/login` (archivo `docs/login/index.html`).
 - Panel admin protegido en `/admin.html` con sesión local.
 - Integración con API de `https://libretime.kusmedios.lat` con timeout y fallback a caché local.

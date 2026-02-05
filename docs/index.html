@@ -22,9 +22,25 @@
       <section class="hero card">
         <h2 id="station-name">Runa Radio</h2>
         <p id="station-tagline"></p>
-        <div class="actions">
-          <a id="listen-live" class="button" target="_blank" rel="noreferrer">Listen Live</a>
-        </div>
+
+        <section class="luna-player" aria-label="Luna Radio Player">
+          <audio id="luna-audio" preload="none"></audio>
+          <div class="luna-meta">
+            <p class="muted">Ahora sonando</p>
+            <h3 id="luna-track">Sin señal</h3>
+            <p id="luna-artist" class="muted">-</p>
+            <p id="luna-stream-status" class="muted">Listo</p>
+          </div>
+
+          <div class="luna-controls">
+            <button id="luna-play" class="button" type="button">▶️ Play</button>
+            <button id="luna-stop" class="button secondary" type="button">⏹ Stop</button>
+            <label for="luna-volume" class="muted">Volumen</label>
+            <input id="luna-volume" type="range" min="0" max="1" step="0.05" value="0.8" />
+          </div>
+
+          <div class="luna-wave" id="luna-wave" aria-hidden="true"></div>
+        </section>
       </section>
 
       <section class="grid-two">

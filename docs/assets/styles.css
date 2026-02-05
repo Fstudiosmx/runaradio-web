@@ -27,3 +27,46 @@ input { background:#0f1520; border:1px solid #2d3952; color:var(--text); padding
 .muted { color:var(--muted); }
 .disabled { opacity: .6; pointer-events: none; }
 .login-card { max-width: 480px; margin: 0 auto; }
+
+.luna-player {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: 1px solid #314261;
+  border-radius: 12px;
+  background: linear-gradient(180deg, #151d2b, #111722);
+  display: grid;
+  gap: .9rem;
+}
+.luna-meta h3 { margin: .2rem 0; font-size: 1.35rem; }
+.luna-controls { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.luna-controls input[type="range"] { width: 180px; padding: 0; }
+.luna-wave {
+  height: 38px;
+  border-radius: 10px;
+  border: 1px solid #2e3b54;
+  background:
+    repeating-linear-gradient(
+      90deg,
+      #2a7dff22 0,
+      #2a7dff22 4px,
+      transparent 4px,
+      transparent 9px
+    ),
+    linear-gradient(90deg, #20304a, #162133);
+  position: relative;
+  overflow: hidden;
+}
+.luna-wave::after {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -40%;
+  width: 40%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, #2a7dff66, transparent);
+  animation: luna-scan 1.6s linear infinite;
+}
+.luna-wave.paused::after { animation-play-state: paused; opacity: .35; }
+@keyframes luna-scan {
+  to { left: 110%; }
+}

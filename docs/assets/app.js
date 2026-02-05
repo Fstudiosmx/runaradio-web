@@ -1,5 +1,5 @@
-const STORAGE_KEY = "runaradio.db.v3";
-const API_CACHE_KEY = "runaradio.api-cache.v3";
+const STORAGE_KEY = "runaradio.db.v4";
+const API_CACHE_KEY = "runaradio.api-cache.v4";
 const ADMIN_SESSION_KEY = "runaradio.admin-session.v1";
 const API_TIMEOUT_MS = 7000;
 
@@ -17,11 +17,7 @@ async function sha256(text) {
 async function loadDefaultDb() {
   const baseDataPath = page === "login" ? "../data/default-db.json" : "./data/default-db.json";
   const response = await fetch(baseDataPath, { cache: "no-store" });
-
-  if (!response.ok) {
-    throw new Error(`No se pudo cargar default-db.json (HTTP ${response.status})`);
-  }
-
+  if (!response.ok) throw new Error(`No se pudo cargar default-db.json (HTTP ${response.status})`);
   return response.json();
 }
 
@@ -31,7 +27,6 @@ function persistDb(db) {
 
 async function getDb() {
   const local = localStorage.getItem(STORAGE_KEY);
-
   if (local) {
     try {
       return JSON.parse(local);
@@ -98,22 +93,90 @@ function createCell(value) {
   return td;
 }
 
+function buildNowPlaying(api, db) {
+  return {
+    track: api?.liveInfo?.current?.name || db.recentlyPlayed[0]?.track || "Sin señal",
+    artist: api?.liveInfo?.current?.artist || db.recentlyPlayed[0]?.artist || "Sin artista",
+    listeners: api?.statusInfo?.listeners?.current || db.listeners.current
+  };
+}
+
+function initLunaPlayer(db, api) {
+  const audio = document.getElementById("luna-audio");
+  const playBtn = document.getElementById("luna-play");
+  const stopBtn = document.getElementById("luna-stop");
+  const volumeInput = document.getElementById("luna-volume");
+  const trackNode = document.getElementById("luna-track");
+  const artistNode = document.getElementById("luna-artist");
+  const statusNode = document.getElementById("luna-stream-status");
+  const wave = document.getElementById("luna-wave");
+
+  if (!audio || !playBtn || !stopBtn || !volumeInput || !trackNode || !artistNode || !statusNode || !wave) {
+    return;
+  }
+
+  const now = buildNowPlaying(api, db);
+  audio.src = db.station.streamUrl;
+  audio.volume = Number(volumeInput.value);
+  trackNode.textContent = now.track;
+  artistNode.textContent = now.artist;
+  statusNode.textContent = `Oyentes: ${now.listeners}`;
+
+  const setPausedUI = (paused) => {
+    playBtn.textContent = paused ? "▶️ Play" : "⏸ Pause";
+    wave.classList.toggle("paused", paused);
+  };
+
+  playBtn.addEventListener("click", async () => {
+    if (audio.paused) {
+      try {
+        await audio.play();
+        statusNode.textContent = "Reproduciendo en vivo";
+        setPausedUI(false);
+      } catch {
+        statusNode.textContent = "Tu navegador bloqueó autoplay. Presiona play otra vez.";
+        setPausedUI(true);
+      }
+      return;
+    }
+
+    audio.pause();
+    statusNode.textContent = "Pausado";
+    setPausedUI(true);
+  });
+
+  stopBtn.addEventListener("click", () => {
+    audio.pause();
+    audio.currentTime = 0;
+    statusNode.textContent = "Detenido";
+    setPausedUI(true);
+  });
+
+  volumeInput.addEventListener("input", () => {
+    audio.volume = Number(volumeInput.value);
+  });
+
+  audio.addEventListener("error", () => {
+    statusNode.textContent = "No se pudo reproducir el stream en este momento.";
+    setPausedUI(true);
+  });
+
+  setPausedUI(true);
+}
+
 function renderHome(db, api) {
   document.getElementById("station-name").textContent = db.station.name;
   document.getElementById("station-tagline").textContent = db.station.tagline;
-  document.getElementById("listen-live").href = db.station.streamUrl;
 
-  const current = api?.liveInfo?.current?.name || db.recentlyPlayed[0]?.track || "Sin señal";
-  const artist = api?.liveInfo?.current?.artist || db.recentlyPlayed[0]?.artist || "Sin artista";
-  const listeners = api?.statusInfo?.listeners?.current || db.listeners.current;
+  const now = buildNowPlaying(api, db);
+  document.getElementById("live-track").textContent = now.track;
+  document.getElementById("live-artist").textContent = now.artist;
+  document.getElementById("listener-count").textContent = `Listeners: ${now.listeners}`;
 
-  document.getElementById("live-track").textContent = current;
-  document.getElementById("live-artist").textContent = artist;
-  document.getElementById("listener-count").textContent = `Listeners: ${listeners}`;
+  initLunaPlayer(db, api);
 
   const shows = document.getElementById("featured-shows");
   shows.replaceChildren();
-
   for (const show of db.featuredShows) {
     const li = document.createElement("li");
     li.textContent = `${show.title} · ${show.dj} (${show.day} ${show.time})`;
@@ -122,7 +185,6 @@ function renderHome(db, api) {
 
   const played = document.getElementById("recently-played");
   played.replaceChildren();
-
   for (const item of db.recentlyPlayed) {
     const tr = document.createElement("tr");
     tr.appendChild(createCell(item.track));
@@ -147,7 +209,6 @@ function renderSchedule(db, api) {
         table.appendChild(tr);
       }
     }
-
     if (table.children.length > 0) return;
   }
 
@@ -166,22 +227,16 @@ function renderCommunity(db) {
 
   const wall = document.getElementById("social-wall");
   wall.replaceChildren();
-
   for (const post of db.socialPosts) {
     const li = document.createElement("li");
     const author = document.createElement("strong");
     author.textContent = post.author;
-
     const message = document.createElement("p");
     message.textContent = post.message;
-
     const meta = document.createElement("span");
     meta.className = "muted";
     meta.textContent = `hace ${post.hoursAgo}h`;
-
-    li.appendChild(author);
-    li.appendChild(message);
-    li.appendChild(meta);
+    li.append(author, message, meta);
     wall.appendChild(li);
   }
 
@@ -189,13 +244,11 @@ function renderCommunity(db) {
   form.addEventListener("submit", (event) => {
     event.preventDefault();
     const data = new FormData(form);
-
     db.requests.push({
       title: String(data.get("title") || ""),
       artist: String(data.get("artist") || ""),
       createdAt: new Date().toISOString()
     });
-
     persistDb(db);
     form.reset();
     alert("Solicitud guardada en base local.");
@@ -282,13 +335,11 @@ function renderAdmin(db) {
     const blob = new Blob([JSON.stringify(db, null, 2)], { type: "application/json" });
     const href = URL.createObjectURL(blob);
     const a = document.createElement("a");
-
     a.href = href;
     a.download = "runaradio-db-export.json";
     document.body.appendChild(a);
     a.click();
     a.remove();
-
     URL.revokeObjectURL(href);
   });
 
