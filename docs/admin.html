@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Runa Radio | Admin</title>
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body data-page="admin">
+    <header class="nav">
+      <h1>Runa Radio</h1>
+      <nav>
+        <a href="./index.html">Home</a>
+        <a href="./schedule.html">Schedule</a>
+        <a href="./community.html">Community</a>
+        <a href="./admin.html">Admin</a>
+        <a href="./login/index.html">Login</a>
+      </nav>
+    </header>
+
+    <main class="container grid-two">
+      <section class="card">
+        <h2>Panel Administrativo</h2>
+        <p class="muted">Área protegida. Si no estás autenticado, serás enviado a <code>/login</code>.</p>
+        <form id="station-form" class="stack" aria-disabled="false">
+          <input required name="name" placeholder="Station name" />
+          <input required name="tagline" placeholder="Tagline" />
+          <input required name="streamUrl" placeholder="Stream URL" />
+          <button class="button" type="submit">Guardar cambios</button>
+        </form>
+        <p id="admin-status"></p>
+      </section>
+
+      <section class="card stack">
+        <h3>Sesión</h3>
+        <button id="export-db" class="button secondary">Export DB JSON</button>
+        <button id="logout-admin" class="button">Cerrar sesión</button>
+      </section>
+    </main>
+
+    <script type="module" src="./assets/app.js"></script>
+  </body>
+</html>

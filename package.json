@@ -1,0 +1,13 @@
+{
+  "name": "runaradio-web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "serve": "python3 -m http.server 4173 --directory docs",
+    "cli": "node cli/runaradio-cli.mjs",
+    "sync": "node cli/runaradio-cli.mjs sync",
+    "seed-admin": "node cli/runaradio-cli.mjs seed-admin",
+    "check": "node --check cli/runaradio-cli.mjs && node --check docs/assets/app.js"
+  }
+}
