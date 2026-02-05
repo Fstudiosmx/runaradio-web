@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Runa Radio | Admin</title>
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body data-page="admin">
+    <header class="nav">
+      <h1>Runa Radio</h1>
+      <nav>
+        <a href="./index.html">Home</a>
+        <a href="./schedule.html">Schedule</a>
+        <a href="./community.html">Community</a>
+        <a href="./admin.html">Admin</a>
+      </nav>
+    </header>
+
+    <main class="container grid-two">
+      <section class="card">
+        <h2>Admin Login</h2>
+        <form id="admin-login" class="stack">
+          <input required name="username" placeholder="Username" />
+          <input required type="password" name="password" placeholder="Password" />
+          <button class="button" type="submit">Login</button>
+        </form>
+        <p class="muted">Default: admin / runaradio123</p>
+        <p id="admin-status"></p>
+      </section>
+
+      <section class="card">
+        <h2>Panel Administrativo</h2>
+        <form id="station-form" class="stack disabled" aria-disabled="true">
+          <input required name="name" placeholder="Station name" />
+          <input required name="tagline" placeholder="Tagline" />
+          <input required name="streamUrl" placeholder="Stream URL" />
+          <button class="button" type="submit">Guardar cambios</button>
+        </form>
+        <button id="export-db" class="button secondary disabled" disabled>Export DB JSON</button>
+      </section>
+    </main>
+
+    <script type="module" src="./assets/app.js"></script>
+  </body>
+</html>

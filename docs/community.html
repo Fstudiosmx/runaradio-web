@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Runa Radio | Community</title>
+    <link rel="stylesheet" href="./assets/styles.css" />
+  </head>
+  <body data-page="community">
+    <header class="nav">
+      <h1>Runa Radio</h1>
+      <nav>
+        <a href="./index.html">Home</a>
+        <a href="./schedule.html">Schedule</a>
+        <a href="./community.html">Community</a>
+        <a href="./admin.html">Admin</a>
+      </nav>
+    </header>
+
+    <main class="container grid-two">
+      <section class="card">
+        <h2>Listener Community & Stats</h2>
+        <p id="community-listeners"></p>
+        <form id="request-form" class="stack">
+          <input required name="title" placeholder="Song title" />
+          <input required name="artist" placeholder="Artist" />
+          <button class="button" type="submit">Submit Request</button>
+        </form>
+      </section>
+      <section class="card">
+        <h3>Social Wall</h3>
+        <ul id="social-wall" class="list"></ul>
+      </section>
+    </main>
+
+    <script type="module" src="./assets/app.js"></script>
+  </body>
+</html>

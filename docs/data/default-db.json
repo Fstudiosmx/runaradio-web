@@ -1,0 +1,90 @@
+{
+  "station": {
+    "name": "Runa Radio",
+    "tagline": "Tune in to the freshest beats and exclusive mixes.",
+    "streamUrl": "https://libretime.kusmedios.lat/live",
+    "apiBaseUrl": "https://libretime.kusmedios.lat"
+  },
+  "listeners": {
+    "current": 123,
+    "peakToday": 342
+  },
+  "featuredShows": [
+    {
+      "title": "Morning Beats",
+      "dj": "DJ Luna",
+      "day": "Monday",
+      "time": "06:00"
+    },
+    {
+      "title": "Midday Mix",
+      "dj": "DJ Echo",
+      "day": "Tuesday",
+      "time": "12:00"
+    },
+    {
+      "title": "Afternoon Drive",
+      "dj": "DJ Nova",
+      "day": "Wednesday",
+      "time": "14:00"
+    },
+    {
+      "title": "Sunset Sessions",
+      "dj": "DJ Orion",
+      "day": "Friday",
+      "time": "18:00"
+    },
+    {
+      "title": "Evening Vibes",
+      "dj": "DJ Stella",
+      "day": "Saturday",
+      "time": "20:00"
+    }
+  ],
+  "socialPosts": [
+    {
+      "author": "Elena Ramirez",
+      "message": "Loving the mix today! Keep up the great work.",
+      "hoursAgo": 2
+    },
+    {
+      "author": "Carlos Mendoza",
+      "message": "Just tuned in, and the vibes are perfect for my afternoon.",
+      "hoursAgo": 3
+    },
+    {
+      "author": "Sofia Rodriguez",
+      "message": "Can't get enough of this station. Always playing the best tunes!",
+      "hoursAgo": 4
+    }
+  ],
+  "requests": [],
+  "recentlyPlayed": [
+    {
+      "track": "Electric Dreams",
+      "artist": "DJ Nova"
+    },
+    {
+      "track": "Midnight Bloom",
+      "artist": "Luna's Serenade"
+    },
+    {
+      "track": "Starlight Symphony",
+      "artist": "The Cosmic Drifters"
+    },
+    {
+      "track": "Whispers of Dawn",
+      "artist": "Aurora's Embrace"
+    }
+  ],
+  "admin": {
+    "users": [
+      {
+        "username": "admin",
+        "passwordHash": "dbd1332e3fdf0a74474bac0586cbb509484a8635e88c0a3be3e0ce578e7ee21d",
+        "role": "superadmin"
+      }
+    ],
+    "updatedAt": "2026-02-05T17:49:06.041Z"
+  }
+}
